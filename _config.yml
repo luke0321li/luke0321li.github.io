@@ -1,0 +1,39 @@
+# Setup
+title:               Runjia Luke Li
+tagline:             
+url:                 http://lukevastus.github.io
+analytics_id:        UA-53335201-2
+
+# About/contact
+author:
+  name:                Runjia Li
+  email:               "luke0321lrj@gmail.com" # email here 
+  avatar:              img/avatar.jpg 
+  profile-pic:         img/profile-pic.jpg
+
+
+
+# Build settings
+markdown:            kramdown
+permalink:           /:title
+sass:
+  sass_dir:          _sass
+  style:            :compressed
+
+
+# Default settings
+defaults:
+  -
+    scope:
+      path: "" 
+      type: "posts" 
+    values:
+      layout: "post"
+      author: Runjia Li
+  -
+    scope:
+      path: "" 
+      type: "pages" 
+    values:
+      layout: "page"
+      

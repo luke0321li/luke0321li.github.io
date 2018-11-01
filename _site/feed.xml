@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.7.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2018-11-01T11:40:18-07:00</updated><id>http://localhost:4000/</id><title type="html">Runjia Luke Li</title><author><name>Runjia Li</name><email>luke0321lrj@gmail.com</email></author><entry><title type="html">Questions regarding Lasso and Ridge Regression</title><link href="http://localhost:4000/Regression" rel="alternate" type="text/html" title="Questions regarding Lasso and Ridge Regression" /><published>2018-05-25T00:00:00-07:00</published><updated>2018-05-25T00:00:00-07:00</updated><id>http://localhost:4000/Regression</id><content type="html" xml:base="http://localhost:4000/Regression">&lt;p&gt;&lt;img src=&quot;https://www.taftmuseum.org/wp-content/uploads/1976-41-Johnson_Cowboy-with-Lasso-on-Horse-957x1200.jpg&quot; alt=&quot;placeholder&quot; /&gt;
+&lt;em&gt;Cowboy with his lasso and presumably on a ridge, by Frank Tenney Johnson&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;This article addresses some frequently asked questions about the two regularized forms of linear regression, namely Lasso and ridge regresion.&lt;/p&gt;
+
+&lt;h2 id=&quot;how-are-they-different-from-regular-linear-regression&quot;&gt;How are they different from regular linear regression?&lt;/h2&gt;
+&lt;p&gt;Lasso and ridge regression impose &lt;script type=&quot;math/tex&quot;&gt;L^{1}&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;L^{2}&lt;/script&gt; penalties on the weight, as a form of regularization.&lt;/p&gt;
+
+&lt;p&gt;Linear regression has the form &lt;script type=&quot;math/tex&quot;&gt;\hat{y} = \boldsymbol{w}^{T}\boldsymbol{x}&lt;/script&gt; where &lt;script type=&quot;math/tex&quot;&gt;\hat{y}, \boldsymbol{w}, \boldsymbol{x}&lt;/script&gt; are the predicted label, weight vector and the feature vector respectively (assume the feature vector has a dummy entry of 1 to account for the bias term). The root mean square cost function is &lt;script type=&quot;math/tex&quot;&gt;J(\boldsymbol{w}) = \frac{1}{n}\sum_{i = 1}^{n}(y_{i} - \boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2}&lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;Now, for Lasso,&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;J(\boldsymbol{w}) = \frac{1}{n}\sum_{i = 1}^{n}(y_{i} - \boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2} + \lambda\|\boldsymbol{w}\|_{1}&lt;/script&gt;
+
+&lt;p&gt;(note: &lt;script type=&quot;math/tex&quot;&gt;\|\boldsymbol{v}\|_{p} = (\sum_{i = 1}^{m}\lvert v_{i}\rvert^{p})^{1/p}&lt;/script&gt; is the &lt;script type=&quot;math/tex&quot;&gt;L^{p}&lt;/script&gt; norm of vector &lt;script type=&quot;math/tex&quot;&gt;\boldsymbol{v} \in \mathbb{R}^{m}&lt;/script&gt;); &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;For ridge regression,&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;J(\boldsymbol{w}) = \frac{1}{n}\sum_{i = 1}^{n}(y_{i} - \boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2} + \lambda\|\boldsymbol{w}\|_{2}^{2}&lt;/script&gt;
+
+&lt;p&gt;It can be seen that for both Lasso and ridge regression, the cost function increases with the norm (can be thought of as a measurement of “size”) of the weight vector. With larger weights, the weight vector will have greater norm, resulting in higher cost. A positive hyperparameter, &lt;script type=&quot;math/tex&quot;&gt;\lambda&lt;/script&gt;, controlls the extent to which the norm affects the cost (its actual mechanism of action will be described later).&lt;/p&gt;
+
+&lt;h2 id=&quot;are-the-cost-functions-still-convex&quot;&gt;Are the cost functions still convex?&lt;/h2&gt;
+
+&lt;p&gt;Yes. The original cost function is convex, the &lt;script type=&quot;math/tex&quot;&gt;L^{p}&lt;/script&gt; norm is always convex, and the sum of convex functions is still convex.&lt;/p&gt;
+
+&lt;h2 id=&quot;what-is-the-gradient-of-lassos-cost-function&quot;&gt;What is the gradient of Lasso’s cost function?&lt;/h2&gt;
+
+&lt;p&gt;&lt;script type=&quot;math/tex&quot;&gt;\lvert x \rvert&lt;/script&gt; is non-differentiable. However, there exist some generalized gradient descent algorithms for non-differentiable functions.&lt;/p&gt;
+
+&lt;h2 id=&quot;what-are-the-closed-form-solutions-for-lasso-and-ridge-regression&quot;&gt;What are the closed-form solutions for Lasso and ridge regression?&lt;/h2&gt;
+
+&lt;p&gt;Since Lasso has a non-differentiable gradient, it does not have a closed-form solution. On the other hand, ridge regression does. Let &lt;script type=&quot;math/tex&quot;&gt;\boldsymbol{y}&lt;/script&gt; be the vector of labels where each element corresponds to the label of a single sample; let &lt;script type=&quot;math/tex&quot;&gt;\mathbf{X}&lt;/script&gt;  be the matrix such that each row corresponds to a single sample’s feature vector. Assume both &lt;script type=&quot;math/tex&quot;&gt;\boldsymbol{y}&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;\boldsymbol{w}&lt;/script&gt; are column vectors, then rewrite the cost function:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;J(\boldsymbol{w}) = (\boldsymbol{y} - \mathbf{X}\boldsymbol{w})^{T}(\boldsymbol{y} - \mathbf{X}\boldsymbol{w}) + \lambda\boldsymbol{w}^{T}\boldsymbol{w}&lt;/script&gt;
+
+&lt;p&gt;As mentioned this function is convex, so a global minimum is guaranteed to be found by setting its derivative to zero.&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\frac{\partial J(\boldsymbol{w})}{\partial \boldsymbol{w}} = -2(\boldsymbol{y} - \mathbf{X}\boldsymbol{w})^{T}\mathbf{X} + 2\lambda\boldsymbol{w}^{T} = 0&lt;/script&gt;
+
+&lt;p&gt;Take the transpose of both sides:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\mathbf{X}^{T}(\boldsymbol{y} - \mathbf{X}\boldsymbol{w}) - \lambda\boldsymbol{w} = 0&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\mathbf{X}^{T}\boldsymbol{y} - (\mathbf{X}^{T}\mathbf{X} + \lambda\mathbf{I})\boldsymbol{w} = 0&lt;/script&gt;
+
+&lt;p&gt;Which gives the closed form solution:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\boldsymbol{w} = (\mathbf{X}^{T}\mathbf{X} + \lambda\mathbf{I})^{-1}\mathbf{X}^{T}\boldsymbol{y}&lt;/script&gt;
+
+&lt;h2 id=&quot;how-does-lasso-select-features&quot;&gt;How does Lasso “select features”?&lt;/h2&gt;
+
+&lt;p&gt;When being asked this question many people pull up this picture:
+&lt;img src=&quot;https://www.mlalgorithms.org/static/figure.l1_l2_regression.1-0af871ca059475802831110c99694ba6-16418.png&quot; alt=&quot;placeholder&quot; /&gt;
+&lt;em&gt;A graph seen by many but understood by few&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Here is a thorough explanation of the picture. Lasso attempts to solve the following convex optimization problem:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\min_{\boldsymbol{w}}\frac{1}{n}\sum_{i = 1}^{n}(y_{i} - \boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2} + \lambda\|\boldsymbol{w}\|_{1}&lt;/script&gt;
+
+&lt;p&gt;In fact, the above is the Lagrangian of the following constrained problem:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\min_{\boldsymbol{w}}\frac{1}{n}\sum_{i = 1}^{n}(y_{i} - \boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2}&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;s.t. \|\boldsymbol{w}\|_{1} \leq t&lt;/script&gt;
+
+&lt;p&gt;where &lt;script type=&quot;math/tex&quot;&gt;t&lt;/script&gt; is some constant.&lt;/p&gt;
+
+&lt;p&gt;This picture describes the simple case where &lt;script type=&quot;math/tex&quot;&gt;\boldsymbol{w}&lt;/script&gt; only has 2 dimensions. The cocentric ellipses are the contour lines of &lt;script type=&quot;math/tex&quot;&gt;\frac{1}{n}\sum_{i = 1}^{n}(y_{i} - \boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2}&lt;/script&gt;, with its global minimum at the red dot (outer contours represent larger function values). The purple diamond represents the bounded region where &lt;script type=&quot;math/tex&quot;&gt;\|\boldsymbol{w}\|_{1} \leq t&lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;Now, solving this constrained optimization problem requires finding a point within the diamond such that it lies on a contour line with a small function value as possible. It is very likely that this point occurs at a vertex of the diamond, in which case one entry of the weight vector must be zero. 
+As a result, one of the features will have a zero coefficient (since linear regression takes the dot product between the weight and feature vectors) and has no impact on &lt;script type=&quot;math/tex&quot;&gt;y&lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;Still, Lasso does not always yield zero entries for the weight vector - but it happens often. According to &lt;em&gt;Elements of Statistical Learning&lt;/em&gt;, with high dimensional data there are many more opportunities for the estimated weights to be zero because the purple diamond will become a rhomboid with a lot of vertices.&lt;/p&gt;
+
+&lt;h2 id=&quot;what-are-the-probabilistic-interpretations-of-lasso-and-ridge-regression&quot;&gt;What are the probabilistic interpretations of Lasso and ridge regression?&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;Basically, Lasso and ridge regression impose different constraints on the probability distribution of the weight&lt;/strong&gt;. Recall that linear regression attempts to model a relationship of the form&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;y = \boldsymbol{w}^{T}\boldsymbol{x} + \epsilon&lt;/script&gt;
+
+&lt;p&gt;where &lt;script type=&quot;math/tex&quot;&gt;\epsilon = y - \boldsymbol{w}^{T}\boldsymbol{x} = y - \hat{y} \sim N(0, \sigma^{2})&lt;/script&gt; is a random noise variable that represents the model’s perturbations from reality. Given some training data &lt;script type=&quot;math/tex&quot;&gt;(\boldsymbol{x}_{1}, y_{1}),... (\boldsymbol{x}_{n}, y_{n})&lt;/script&gt;, one may fit a model by finding a maximum-likelihood estimation of its parameter &lt;script type=&quot;math/tex&quot;&gt;\boldsymbol{w}&lt;/script&gt;. The likelihood is the probability of observing the training labels &lt;script type=&quot;math/tex&quot;&gt;\boldsymbol{y}&lt;/script&gt;, given the
+training samples &lt;script type=&quot;math/tex&quot;&gt;\mathbf{X}&lt;/script&gt; and the parameter &lt;script type=&quot;math/tex&quot;&gt;\boldsymbol{w}&lt;/script&gt;:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;L(\boldsymbol{w}) = P(\boldsymbol{y}\vert\mathbf{X}; \boldsymbol{w}) = \prod_{i = 1}^{n}P(y_{i} \vert \boldsymbol{x}_{i}; \boldsymbol{w})&lt;/script&gt;
+
+&lt;p&gt;Since &lt;script type=&quot;math/tex&quot;&gt;\epsilon \sim N(0, \sigma^{2})&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;y\vert\boldsymbol{x}_{i} \sim N(\boldsymbol{w}^{T}\boldsymbol{x}_{i}, \sigma^{2})&lt;/script&gt;. Therefore the above equation becomes:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;L(\boldsymbol{w}) = \prod_{i = 1}^{n}\frac{1}{\sqrt{2\pi\sigma^{2}}}e^{-\frac{(y_{i} - \boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2}}{2\sigma^{2}}}&lt;/script&gt;
+
+&lt;p&gt;Taking its logarithm gives the log-likelihood form:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;l(\boldsymbol{w}) = \sum_{i = 1}^{n}\log(\frac{1}{\sqrt{2\pi\sigma^{2}}})-\sum_{i = 1}^{n}\frac{(y_{i} -\boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2}}{2\sigma^{2}}&lt;/script&gt;
+
+&lt;p&gt;To find a best &lt;script type=&quot;math/tex&quot;&gt;\boldsymbol{w}&lt;/script&gt; we attempt to maximize this log-likelihood. Notice that:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\underset{\boldsymbol{w}}{\arg\max}\;l(\boldsymbol{w}) = \underset{\boldsymbol{w}}{\arg\max}-\sum_{i = 1}^{n}(y_{i} -\boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2} = \underset{\boldsymbol{w}}{\arg\min}\;J(\boldsymbol{w})&lt;/script&gt;
+
+&lt;p&gt;In other words, minimizing the cost is the same problem as maximizing the log likelihood, giving the optimization problem a graceful probabilistic interpretation.&lt;/p&gt;
+
+&lt;p&gt;With Lasso, each term in the weight vector &lt;script type=&quot;math/tex&quot;&gt;\boldsymbol{w}&lt;/script&gt; is forced to have a Laplacian prior distribution with mean 0 and some scale &lt;script type=&quot;math/tex&quot;&gt;b&lt;/script&gt;:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;w_{i} \sim Laplace(0, b)&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;P(\boldsymbol{w})= \prod_{i = 1}^{m}\frac{1}{2b}e^{\frac{-\vert w_{i}\vert}{b}}&lt;/script&gt;
+
+&lt;p&gt;The likelihood is multiplied by the prior to obtain the maximum a posteriori (MAP) objective:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;P(\boldsymbol{y}\vert\mathbf{X}; \boldsymbol{w})P(\boldsymbol{w}) = \prod_{i = 1}^{n}\frac{1}{\sqrt{2\pi\sigma^{2}}}e^{-\frac{(y_{i} - \boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2}}{2\sigma^{2}}} \prod_{i = 1}^{m}\frac{1}{2b}e^{\frac{-\vert w_{i}\vert}{b}}&lt;/script&gt;
+
+&lt;p&gt;Taking the logarithm:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\sum_{i = 1}^{n}\log(\frac{1}{\sqrt{2\pi\sigma^{2}}})-\sum_{i = 1}^{n}\frac{(y_{i} -\boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2}}{2\sigma^{2}} + \sum_{i = 1}^{m}\log(\frac{1}{2b}) - \sum_{i = 1}^{m}\frac{\vert w_{i}\vert}{b}&lt;/script&gt;
+
+&lt;p&gt;After taking the argmax and removing irrelevant terms:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\underset{\boldsymbol{w}}{\arg\max}\;l(\boldsymbol{w}) = \underset{\boldsymbol{w}}{\arg\min}\sum_{i = 1}^{n}\frac{(y_{i} -\boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2}}{2\sigma^{2}} + \sum_{i = 1}^{m}\frac{\vert w_{i}\vert}{b}&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;= \underset{\boldsymbol{w}}{\arg\min}\sum_{i = 1}^{n}(y_{i} -\boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2} + \frac{2\sigma^{2}}{b}\|\boldsymbol{w}\|_{1}&lt;/script&gt;
+
+&lt;p&gt;Now this clearly resembles the Lasso cost function described previously, except that in the latter, the term &lt;script type=&quot;math/tex&quot;&gt;2\sigma^{2}/b&lt;/script&gt; is represented by a single parameter &lt;script type=&quot;math/tex&quot;&gt;\lambda&lt;/script&gt;. Since &lt;script type=&quot;math/tex&quot;&gt;\sigma&lt;/script&gt; is fixed for a given training set, &lt;script type=&quot;math/tex&quot;&gt;\lambda&lt;/script&gt; is actually inversely proportional to the scale parameter &lt;script type=&quot;math/tex&quot;&gt;b&lt;/script&gt; of the distribution of weights.&lt;/p&gt;
+
+&lt;p&gt;With ridge regression, &lt;script type=&quot;math/tex&quot;&gt;\boldsymbol{w}&lt;/script&gt; has a prior in the form of a multivariate normal distribution:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\boldsymbol{w} \sim N(0, a^{2}\mathbf{I})&lt;/script&gt;
+
+&lt;p&gt;In other words:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;w_{i} \sim N(0, a^{2})&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;P(\boldsymbol{w}) = \prod_{i = 1}^{m}\frac{1}{\sqrt{2\pi a^{2}}}e^{-\frac{w_{i}^{2}}{2a^{2}}}&lt;/script&gt;
+
+&lt;p&gt;where &lt;script type=&quot;math/tex&quot;&gt;a&lt;/script&gt; is some constant. In a similar fashion as above, minimizing the cost function of ridge regression can be shown as equivalent to maximizing &lt;script type=&quot;math/tex&quot;&gt;P(\boldsymbol{y}\vert\mathbf{X}; \boldsymbol{w})P(\boldsymbol{w})&lt;/script&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;what-is-a-compromise-between-lasso-and-ridge-regression&quot;&gt;What is a compromise between Lasso and ridge regression?&lt;/h2&gt;
+&lt;p&gt;The elasic net regression takes the linear combination of &lt;script type=&quot;math/tex&quot;&gt;L^{1}&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;L^{2}&lt;/script&gt; penalties as the regularization term:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;J(\boldsymbol{w}) = \frac{1}{n}\sum_{i = 1}^{n}(y_{i} - \boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2} + \lambda_{1}\|\boldsymbol{w}\|_{1} + \lambda_{2}\|\boldsymbol{w}\|_{2}&lt;/script&gt;</content><author><name>Runjia Li</name></author><summary type="html">Cowboy with his lasso and presumably on a ridge, by Frank Tenney Johnson</summary></entry><entry><title type="html">A very quick note on the confusion matrix</title><link href="http://localhost:4000/Confusion" rel="alternate" type="text/html" title="A very quick note on the confusion matrix" /><published>2018-02-23T00:00:00-08:00</published><updated>2018-02-23T00:00:00-08:00</updated><id>http://localhost:4000/Confusion</id><content type="html" xml:base="http://localhost:4000/Confusion">&lt;p&gt;&lt;img src=&quot;https://chloenelkin.files.wordpress.com/2012/12/cat-7-mondrian-composition-c-no-iii-with-red-yellow-and-blue-1935_stretchcmyk-no-6-in-photo-sheet1.jpg&quot; alt=&quot;placeholder&quot; /&gt;
+&lt;em&gt;Composition C by Piet Mondiran.&lt;/em&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;motivation&quot;&gt;Motivation&lt;/h2&gt;
+&lt;p&gt;The confusion matrix plays a huge role in evaluating performance of a statistical model (or a diagnostic device). Below is a self-explanatory example of a binary confusion matrix.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://rasbt.github.io/mlxtend/user_guide/evaluate/confusion_matrix_files/confusion_matrix_1.png&quot; alt=&quot;placeholder&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;For example, assume someone developed a device that detects ADHD. He then conducted some clinical tests to justify the validity of the device. It is given that, of all the 1000 test subjects, 200 actually has ADHD and the rest are control. The device, oblivious of the actual distribution, identified 180 ADHD-positive individuals. Among these 180 subjects, 170 are “real” ADHD patients and the rest are controls misclassified by the device. In this case, we have 170 true positives (TPs), 180 - 170 = 10 false positives (FPs), 800 - 10 = 790 true negatives (TNs), and 200 - 170 = 30 false negatives (FNs).&lt;/p&gt;
+
+&lt;h2 id=&quot;metrics&quot;&gt;Metrics&lt;/h2&gt;
+&lt;p&gt;Natually, one would want as many TP and TN as possible relative to FP and FN. Therefore, scientists developed many derived values from the confusion matrix. Some of them are used interchangeably and are indeed the same thing. Some of them are used ambiguously but are in fact not the same. Here is a list of all the metrics derived from the confusion matrix and their usage:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Precision&lt;/strong&gt; (with no alternative names so far) is &lt;script type=&quot;math/tex&quot;&gt;\frac{TP}{TP + FP}&lt;/script&gt; in other words how many samples identified as positive by the model/device are actually positive. It is a measure of how well the model avoids classifying negative samples as positive.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Recall&lt;/strong&gt;, also called &lt;strong&gt;Sensitivity&lt;/strong&gt; or &lt;strong&gt;True Positive Rate&lt;/strong&gt;, is &lt;script type=&quot;math/tex&quot;&gt;\frac{TP}{TP + FN}&lt;/script&gt;. Since the sum of TP and FN is the total number of positive samples, recall measures how well the model “picks out” the positive samples, i.e. what proportion of all the positive samples are correctly identified.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Specificity&lt;/strong&gt;, also called &lt;strong&gt;True Negative Rate&lt;/strong&gt;, is &lt;script type=&quot;math/tex&quot;&gt;\frac{TN}{TN + FP}&lt;/script&gt;. It is like recall but for negative samples. The sum of TN and FP is the total number of negative samples. Therefore, specificity measures what proportion of all the negative samples are correctly identified.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;People usually say “precision &amp;amp; recall” or “sensitivity &amp;amp; specificity” as if they are intrinsically paired. Indeed, precision and recall are both used to compute another metric called F1-score. Higher F1-score indicates better accuracy because it is the harmonic mean of precision (&lt;script type=&quot;math/tex&quot;&gt;P&lt;/script&gt;) and recall (&lt;script type=&quot;math/tex&quot;&gt;R&lt;/script&gt;):&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;F_{1} = 2\frac{PR}{P + R}&lt;/script&gt;
+
+&lt;p&gt;On the other hand, sensitivity (&lt;script type=&quot;math/tex&quot;&gt;TPR&lt;/script&gt;) and 1 - specificity (&lt;script type=&quot;math/tex&quot;&gt;1 - TNR = FPR&lt;/script&gt;, false positive rate) are the y- and x-axis for the ROC (receiver operating characteristic) curve respectively. There will probably be another article discussing the ROC in detail coming soon.&lt;/p&gt;
+
+&lt;h2 id=&quot;final-notes&quot;&gt;Final notes&lt;/h2&gt;
+&lt;p&gt;A multitide of statistical metrics have been invented to address the vagueness of the term “model accuracy”. Also, having high score for one metric does not necessarily imply the same for another. A model may have great sensitivity but poor precision because it simply identifies all samples as positive.&lt;/p&gt;</content><author><name>Runjia Li</name></author><summary type="html">Composition C by Piet Mondiran.</summary></entry><entry><title type="html">Random sampling from a large reservoir</title><link href="http://localhost:4000/Sampling" rel="alternate" type="text/html" title="Random sampling from a large reservoir" /><published>2018-01-15T00:00:00-08:00</published><updated>2018-01-15T00:00:00-08:00</updated><id>http://localhost:4000/Sampling</id><content type="html" xml:base="http://localhost:4000/Sampling">&lt;p&gt;&lt;img src=&quot;https://tinashealthyliving.com/wp-content/uploads/2017/07/Basmati-Rice.jpg&quot; alt=&quot;placeholder&quot; /&gt;
+&lt;em&gt;Photo source: https://tinashealthyliving.com/wp-content/uploads/2017/07/Basmati-Rice.jpg&lt;/em&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;motivation&quot;&gt;Motivation&lt;/h2&gt;
+&lt;p&gt;During quantitative or statistical research, sometimes one may attempt to randomly sample from a large reservoir of data. For example, in k-fold cross validation, &lt;script type=&quot;math/tex&quot;&gt;\frac{1}{k}&lt;/script&gt; of the original data is randomly selected.&lt;/p&gt;
+
+&lt;p&gt;Give the original dataset of size &lt;script type=&quot;math/tex&quot;&gt;n&lt;/script&gt; and a desired sample size &lt;script type=&quot;math/tex&quot;&gt;m&lt;/script&gt;, a naive way of implementing a random sampling algorithm is to generate a random number &lt;script type=&quot;math/tex&quot;&gt;r \in [0, n - 1]&lt;/script&gt; and then put the &lt;script type=&quot;math/tex&quot;&gt;r&lt;/script&gt;th item  into the sample; the process is repeated until there are &lt;script type=&quot;math/tex&quot;&gt;m&lt;/script&gt; items in the sample. However, this method does not work when dealing with streamed data (coming in indefinitely) because one does not have knowledge of &lt;script type=&quot;math/tex&quot;&gt;n&lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;This post explores efficient computational apporaches for random sampling that covers the case where size of the original dataset is not necessarily known.&lt;/p&gt;
+
+&lt;h2 id=&quot;methods&quot;&gt;Methods&lt;/h2&gt;
+&lt;h3 id=&quot;approach-1&quot;&gt;Approach 1&lt;/h3&gt;
+&lt;p&gt;The first approach is to maintain a priority queue. Initially when no data is present the priority queue is empty. Then, A random number (usually between 0 and 1) is generated and assigned to each data item as a key. Traverse the dataset and push each item (paired with their random number key) into the priority queue, which sorts the items based on their keys, until the size of the queue reaches &lt;script type=&quot;math/tex&quot;&gt;m&lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;Now, generate the random key &lt;script type=&quot;math/tex&quot;&gt;r_{m + i}&lt;/script&gt; for the (&lt;script type=&quot;math/tex&quot;&gt;m + i&lt;/script&gt;)th item as usual. Investigate the top element (item with largest key) in the priority queue: if its key is larger than &lt;script type=&quot;math/tex&quot;&gt;r_{m + i}&lt;/script&gt;, remove it and push the (&lt;script type=&quot;math/tex&quot;&gt;m + i&lt;/script&gt;)th item into the priority queue; otherwise, discard the (&lt;script type=&quot;math/tex&quot;&gt;m + i&lt;/script&gt;)th item. The same is done for all the upcoming items; anyhow, the size of the priority queue will be maintained at &lt;script type=&quot;math/tex&quot;&gt;m&lt;/script&gt;. This is equivalent to generating a random key for all items in a dataset and keeping the &lt;script type=&quot;math/tex&quot;&gt;m&lt;/script&gt; smallest ones.&lt;/p&gt;
+
+&lt;p&gt;This method is easily understood. It requires &lt;script type=&quot;math/tex&quot;&gt;O(m)&lt;/script&gt; space for storing the sample and &lt;script type=&quot;math/tex&quot;&gt;O(nlog(m))&lt;/script&gt; time to process all the &lt;script type=&quot;math/tex&quot;&gt;n&lt;/script&gt; samples (because &lt;script type=&quot;math/tex&quot;&gt;O(log(m))&lt;/script&gt; time is required for pushing items into the priority queue).&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Can it be done in linear time?&lt;/em&gt;&lt;/p&gt;
+&lt;h3 id=&quot;approach-2&quot;&gt;Approach 2&lt;/h3&gt;
+&lt;p&gt;Yes, but in a slightly more convoluted way, as described in &lt;a href=&quot;http://www.cs.umd.edu/~samir/498/vitter.pdf&quot;&gt;this paper&lt;/a&gt;. To achieve such linear time complexity, traverse the dataset and put the first &lt;script type=&quot;math/tex&quot;&gt;m&lt;/script&gt; items into an array of size &lt;script type=&quot;math/tex&quot;&gt;m&lt;/script&gt; (indexed from 1 to &lt;script type=&quot;math/tex&quot;&gt;m&lt;/script&gt;, for the sake of convenience). For the (&lt;script type=&quot;math/tex&quot;&gt;m + i&lt;/script&gt;)th item, generate a random number &lt;script type=&quot;math/tex&quot;&gt;r_{m + i} \in [1, m + i]&lt;/script&gt;. If &lt;script type=&quot;math/tex&quot;&gt;r_{m + i} \leq m&lt;/script&gt;, replace the (&lt;script type=&quot;math/tex&quot;&gt;r_{m + i}&lt;/script&gt;)th item in the array with the (&lt;script type=&quot;math/tex&quot;&gt;m + i&lt;/script&gt;)th item; otherwise discard the (&lt;script type=&quot;math/tex&quot;&gt;m + i&lt;/script&gt;)th item.&lt;/p&gt;
+
+&lt;p&gt;Now since accessing an array item at some known index takes constant time, this approach obviously needs only &lt;script type=&quot;math/tex&quot;&gt;O(n)&lt;/script&gt; time in general, with the same memory requirement as the previous approach. However, how does this method guarantee that every item has the same probability of being present in the sample?&lt;/p&gt;
+
+&lt;p&gt;Let &lt;script type=&quot;math/tex&quot;&gt;P(item_{k} \in Sample; n)&lt;/script&gt; be the probability that after scanning &lt;script type=&quot;math/tex&quot;&gt;n&lt;/script&gt; items, the &lt;script type=&quot;math/tex&quot;&gt;k&lt;/script&gt;th item in the original dataset is in the final sample.&lt;/p&gt;
+&lt;h4 id=&quot;case-1-k--m&quot;&gt;Case 1: &lt;script type=&quot;math/tex&quot;&gt;k &gt; m&lt;/script&gt;&lt;/h4&gt;
+&lt;p&gt;If &lt;script type=&quot;math/tex&quot;&gt;k &gt; m&lt;/script&gt;, the first requisite is that the random number &lt;script type=&quot;math/tex&quot;&gt;r_{k}&lt;/script&gt; generated for the &lt;script type=&quot;math/tex&quot;&gt;k&lt;/script&gt;th item should be smaller or equal to &lt;script type=&quot;math/tex&quot;&gt;m&lt;/script&gt;. If so, the &lt;script type=&quot;math/tex&quot;&gt;k&lt;/script&gt;th item can supercede the &lt;script type=&quot;math/tex&quot;&gt;r_{k}&lt;/script&gt;th item in the sample. Since &lt;script type=&quot;math/tex&quot;&gt;r_{k} \in [1, k]&lt;/script&gt; there is a &lt;script type=&quot;math/tex&quot;&gt;\frac{m}{k}&lt;/script&gt; chance that &lt;script type=&quot;math/tex&quot;&gt;r_{k} \leq m&lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;In addition, if the &lt;script type=&quot;math/tex&quot;&gt;k&lt;/script&gt;th item is to remain in the sample until all &lt;script type=&quot;math/tex&quot;&gt;n&lt;/script&gt; items are scanned, every subsequent random number &lt;script type=&quot;math/tex&quot;&gt;r_{k + i}&lt;/script&gt; should not be equal to &lt;script type=&quot;math/tex&quot;&gt;r_{k}&lt;/script&gt;; otherwise, the &lt;script type=&quot;math/tex&quot;&gt;k&lt;/script&gt;th item which is now placed at the (&lt;script type=&quot;math/tex&quot;&gt;r_{k}&lt;/script&gt;)th position in the array would be replaced. &lt;script type=&quot;math/tex&quot;&gt;P(r_{k + i} =  r_{k}) = \frac{1}{k + i}&lt;/script&gt; and it follows that, for all &lt;script type=&quot;math/tex&quot;&gt;i \geq 1&lt;/script&gt;:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;P(r_{k + i} \neq r_{k}) = 1 - \frac{1}{k + i} = \frac{k + i - 1}{k + i}&lt;/script&gt;
+
+&lt;p&gt;Combining the two requisites above, &lt;script type=&quot;math/tex&quot;&gt;P(item_{k} \in Sample; n)&lt;/script&gt; is obtained as:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\frac{m}{k}\prod_{i = 1}^{n - k}P(r_{k + i} \neq r_{k}) =  \frac{m}{k}\prod_{i = 1}^{n - k}\frac{k + i - 1}{k + i} = \frac{m}{n}&lt;/script&gt;
+
+&lt;p&gt;The same holds for all &lt;script type=&quot;math/tex&quot;&gt;k &gt; m&lt;/script&gt;.&lt;/p&gt;
+&lt;h4 id=&quot;case-2-k-leq-m&quot;&gt;Case 2: &lt;script type=&quot;math/tex&quot;&gt;k \leq m&lt;/script&gt;&lt;/h4&gt;
+&lt;p&gt;Now since the &lt;script type=&quot;math/tex&quot;&gt;k&lt;/script&gt;th item is already in the sample, it needs to remain there until all items are scanned. All random numbers generated &lt;script type=&quot;math/tex&quot;&gt;r_{m + i}&lt;/script&gt; should not be equal to &lt;script type=&quot;math/tex&quot;&gt;k&lt;/script&gt;. In other words,&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;P(item_{k} \in Sample; n) = \prod_{i = 1}^{n - m}P(r_{m + i} \neq k) = \prod_{i = 1}^{n - m}\frac{m + i - 1}{m + i} = \frac{m}{n}&lt;/script&gt;
+
+&lt;p&gt;A possible implementation in C++ is shown below:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rndSample&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dataset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;output&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dataset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;m&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;output&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dataset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rand&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;m&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;output&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dataset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; 
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;output&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;discussion&quot;&gt;Discussion&lt;/h2&gt;
+&lt;p&gt;The two methods described above are the better known sampling algorithms. Their variants can also solve some additional problems:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;What if sampling with replacement (the same item is allowed to appear multiple times in the sample) is allowed?&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;What if each sample has a “weight” (some predefined probability of being selected in the sample)?&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;</content><author><name>Runjia Li</name></author><summary type="html">Photo source: https://tinashealthyliving.com/wp-content/uploads/2017/07/Basmati-Rice.jpg</summary></entry><entry><title type="html">Hello World!</title><link href="http://localhost:4000/Hello-World" rel="alternate" type="text/html" title="Hello World!" /><published>2018-01-14T00:00:00-08:00</published><updated>2018-01-14T00:00:00-08:00</updated><id>http://localhost:4000/Hello-World</id><content type="html" xml:base="http://localhost:4000/Hello-World">&lt;h2 id=&quot;welcome&quot;&gt;WELCOME!&lt;/h2&gt;
+&lt;p&gt;Hi, welcome to my personal website!&lt;/p&gt;
+
+&lt;p&gt;Here is a demo of latex in action:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;a = \frac{b}{c}&lt;/script&gt;
+
+&lt;p&gt;Wow, it is working!&lt;/p&gt;</content><author><name>Runjia Li</name></author><summary type="html">WELCOME! Hi, welcome to my personal website!</summary></entry><entry><title type="html">Introducing Utterson</title><link href="http://localhost:4000/introducing-utterson" rel="alternate" type="text/html" title="Introducing Utterson" /><published>2016-03-16T00:00:00-07:00</published><updated>2016-03-16T00:00:00-07:00</updated><id>http://localhost:4000/introducing-utterson</id><content type="html" xml:base="http://localhost:4000/introducing-utterson">&lt;p&gt;Utterson was built on top of &lt;a href=&quot;http://jekyllrb.com&quot;&gt;Jekyll&lt;/a&gt;, a static site generator, and  &lt;a href=&quot;https://github.com/poole/poole&quot;&gt;Poole&lt;/a&gt;, a vanilla Jekyll install. It was designed and developed by &lt;a href=&quot;https://twitter.com/alidcastano&quot;&gt;@alidcastano&lt;/a&gt;, to provide a minimal and unassuming theme, focused on what matters: you and your content.&lt;/p&gt;
+
+&lt;p&gt;Utterson provides a fully-functional setup:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Home Page with according navigation&lt;/strong&gt; makes your site is easy to navigate.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Sliding email subscription form&lt;/strong&gt; lets you can build your audience in a an unobtrusive manner.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Simple Contact Form&lt;/strong&gt; with &lt;a href=&quot;http://www.formspree.io/&quot;&gt;Formspree&lt;/a&gt;, provides a way for your your readers easily reach you by email, without you having to reveal personal information.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Scrolling navigation bar&lt;/strong&gt; for posts lets readers can easily go back to your home page.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Fade-in footer&lt;/strong&gt; allows you to have one last call to action at the bottom of each post, without getting in the way of your content.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Also, building off Poole’s vanilla install:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;A holistic Jekyll setup&lt;/strong&gt; (Layouts, config, &lt;a href=&quot;/archive&quot;&gt;archive page&lt;/a&gt;, &lt;a href=&quot;/404.html&quot;&gt;404&lt;/a&gt;, example pages and posts.)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Easily scalable&lt;/strong&gt; text and component sizing with &lt;code class=&quot;highlighter-rouge&quot;&gt;rem&lt;/code&gt; units in the CSS.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Mobile Friendly Design&lt;/strong&gt; so that your site can be accessed on any device.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;learn-more-and-contribute-on-github&quot;&gt;Learn more and contribute on &lt;a href=&quot;http://utterson.alidcastano.com/&quot;&gt;GitHub&lt;/a&gt;.&lt;/h3&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;If you’d like to see the theme in action, you can see it live on my &lt;a href=&quot;http://alidcastano.com/&quot;&gt;site&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;And, in case you’re interested, these are three other themes, also built by &lt;a href=&quot;https://twitter.com/mdo&quot;&gt;@mdo&lt;/a&gt; on Poole: &lt;a href=&quot;http://hyde.getpoole.com&quot;&gt;Hyde&lt;/a&gt;, &lt;a href=&quot;http://lanyon.getpoole.com&quot;&gt;Lanyon&lt;/a&gt;, &lt;a href=&quot;http://enfield.getpoole.com&quot;&gt;Enfield&lt;/a&gt;. But, if I’m honest, you’re best of picking this one. (;&lt;/p&gt;</content><author><name>Runjia Li</name></author><summary type="html">Utterson was built on top of Jekyll, a static site generator, and Poole, a vanilla Jekyll install. It was designed and developed by @alidcastano, to provide a minimal and unassuming theme, focused on what matters: you and your content. Utterson provides a fully-functional setup: Home Page with according navigation makes your site is easy to navigate. Sliding email subscription form lets you can build your audience in a an unobtrusive manner. Simple Contact Form with Formspree, provides a way for your your readers easily reach you by email, without you having to reveal personal information. Scrolling navigation bar for posts lets readers can easily go back to your home page. Fade-in footer allows you to have one last call to action at the bottom of each post, without getting in the way of your content. Also, building off Poole’s vanilla install: A holistic Jekyll setup (Layouts, config, archive page, 404, example pages and posts.) Easily scalable text and component sizing with rem units in the CSS. Mobile Friendly Design so that your site can be accessed on any device. Learn more and contribute on GitHub. If you’d like to see the theme in action, you can see it live on my site. And, in case you’re interested, these are three other themes, also built by @mdo on Poole: Hyde, Lanyon, Enfield. But, if I’m honest, you’re best of picking this one. (;</summary></entry><entry><title type="html">Example content for posts</title><link href="http://localhost:4000/example-content" rel="alternate" type="text/html" title="Example content for posts" /><published>2016-03-16T00:00:00-07:00</published><updated>2016-03-16T00:00:00-07:00</updated><id>http://localhost:4000/example-content</id><content type="html" xml:base="http://localhost:4000/example-content">&lt;div class=&quot;message&quot;&gt;
+  Welcome! This is an example blog post that shows several types of HTML content supported in this theme, compliments of &lt;a href=&quot;https://github.com/poole/poole&quot;&gt;Poole&lt;/a&gt;. 
+&lt;/div&gt;
+
+&lt;p&gt;Cum sociis natoque penatibus et magnis &lt;a href=&quot;#&quot;&gt;dis parturient montes&lt;/a&gt;, nascetur ridiculus mus. &lt;em&gt;Aenean eu leo quam.&lt;/em&gt; Pellentesque ornare sem lacinia quam venenatis vestibulum. Sed posuere consectetur est at lobortis. Cras mattis consectetur purus sit amet fermentum.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Curabitur blandit tempus porttitor. Nullam quis risus eget urna mollis ornare vel eu leo. Nullam id dolor id nibh ultricies vehicula ut id elit.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Etiam porta &lt;strong&gt;sem malesuada magna&lt;/strong&gt; mollis euismod. Cras mattis consectetur purus sit amet fermentum. Aenean lacinia bibendum nulla sed consectetur.&lt;/p&gt;
+
+&lt;h2 id=&quot;inline-html-elements&quot;&gt;Inline HTML elements&lt;/h2&gt;
+
+&lt;p&gt;HTML defines a long list of available inline tags, a complete list of which can be found on the &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/HTML/Element&quot;&gt;Mozilla Developer Network&lt;/a&gt;.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;To bold text&lt;/strong&gt;, use &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;strong&amp;gt;&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;To italicize text&lt;/em&gt;, use &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;em&amp;gt;&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;Abbreviations, like &lt;abbr title=&quot;HyperText Markup Langage&quot;&gt;HTML&lt;/abbr&gt; should use &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;abbr&amp;gt;&lt;/code&gt;, with an optional &lt;code class=&quot;highlighter-rouge&quot;&gt;title&lt;/code&gt; attribute for the full phrase.&lt;/li&gt;
+  &lt;li&gt;Citations, like &lt;cite&gt;— Mark otto&lt;/cite&gt;, should use &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;cite&amp;gt;&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;&lt;del&gt;Deleted&lt;/del&gt; text should use &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;del&amp;gt;&lt;/code&gt; and &lt;ins&gt;inserted&lt;/ins&gt; text should use &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;ins&amp;gt;&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;Superscript &lt;sup&gt;text&lt;/sup&gt; uses &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;sup&amp;gt;&lt;/code&gt; and subscript &lt;sub&gt;text&lt;/sub&gt; uses &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;sub&amp;gt;&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Most of these elements are styled by browsers with few modifications on our part.&lt;/p&gt;
+
+&lt;h2 id=&quot;footnotes&quot;&gt;Footnotes&lt;/h2&gt;
+
+&lt;p&gt;Footnotes are supported as part of the Markdown syntax. Here’s one in action. Clicking this number&lt;sup id=&quot;fnref:fn-sample_footnote&quot;&gt;&lt;a href=&quot;#fn:fn-sample_footnote&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt; will lead you to a footnote. The syntax looks like:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;Clicking this number[^fn-sample_footnote]&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Each footnote needs the &lt;code class=&quot;highlighter-rouge&quot;&gt;^fn-&lt;/code&gt; prefix and a unique ID to be referenced for the footnoted content. The syntax for that list looks something like this:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;[^fn-sample_footnote]: Handy! Now click the return link to go back.&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;You can place the footnoted content wherever you like. Markdown parsers should properly place it at the bottom of the post.&lt;/p&gt;
+
+&lt;h2 id=&quot;heading&quot;&gt;Heading&lt;/h2&gt;
+
+&lt;p&gt;Vivamus sagittis lacus vel augue rutrum faucibus dolor auctor. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.&lt;/p&gt;
+
+&lt;h3 id=&quot;code&quot;&gt;Code&lt;/h3&gt;
+
+&lt;p&gt;Inline code is available with the &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;code&amp;gt;&lt;/code&gt; element. Snippets of multiple lines of code are supported through Pygments. Longer lines will automatically scroll horizontally when needed.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// Example can be run directly in your JavaScript console
+&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// Create a function that takes two arguments and returns the sum of those arguments
+&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;adder&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;a&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;b&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;return a + b&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// Call the function
+&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;adder&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// &amp;gt; 8&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;You may also optionally show code snippets with line numbers. Add &lt;code class=&quot;highlighter-rouge&quot;&gt;linenos&lt;/code&gt; to the Pygments tags.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;c1&quot;&gt;// Example can be run directly in your JavaScript console
+&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// Create a function that takes two arguments and returns the sum of those arguments
+&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;adder&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;a&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;b&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;return a + b&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// Call the function
+&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;adder&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// &amp;gt; 8&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Aenean lacinia bibendum nulla sed consectetur. Etiam porta sem malesuada magna mollis euismod. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa.&lt;/p&gt;
+
+&lt;h3 id=&quot;lists&quot;&gt;Lists&lt;/h3&gt;
+
+&lt;p&gt;Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean lacinia bibendum nulla sed consectetur. Etiam porta sem malesuada magna mollis euismod. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Praesent commodo cursus magna, vel scelerisque nisl consectetur et.&lt;/li&gt;
+  &lt;li&gt;Donec id elit non mi porta gravida at eget metus.&lt;/li&gt;
+  &lt;li&gt;Nulla vitae elit libero, a pharetra augue.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Donec ullamcorper nulla non metus auctor fringilla. Nulla vitae elit libero, a pharetra augue.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Vestibulum id ligula porta felis euismod semper.&lt;/li&gt;
+  &lt;li&gt;Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.&lt;/li&gt;
+  &lt;li&gt;Maecenas sed diam eget risus varius blandit sit amet non magna.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Cras mattis consectetur purus sit amet fermentum. Sed posuere consectetur est at lobortis.&lt;/p&gt;
+
+&lt;dl&gt;
+  &lt;dt&gt;HyperText Markup Language (HTML)&lt;/dt&gt;
+  &lt;dd&gt;The language used to describe and define the content of a Web page&lt;/dd&gt;
+
+  &lt;dt&gt;Cascading Style Sheets (CSS)&lt;/dt&gt;
+  &lt;dd&gt;Used to describe the appearance of Web content&lt;/dd&gt;
+
+  &lt;dt&gt;JavaScript (JS)&lt;/dt&gt;
+  &lt;dd&gt;The programming language used to build advanced Web sites and applications&lt;/dd&gt;
+&lt;/dl&gt;
+
+&lt;p&gt;Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Nullam quis risus eget urna mollis ornare vel eu leo.&lt;/p&gt;
+
+&lt;h3 id=&quot;images&quot;&gt;Images&lt;/h3&gt;
+
+&lt;p&gt;Quisque consequat sapien eget quam rhoncus, sit amet laoreet diam tempus. Aliquam aliquam metus erat, a pulvinar turpis suscipit at.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://placehold.it/800x400&quot; alt=&quot;placeholder&quot; title=&quot;Large example image&quot; /&gt;
+&lt;img src=&quot;http://placehold.it/400x200&quot; alt=&quot;placeholder&quot; title=&quot;Medium example image&quot; /&gt;
+&lt;img src=&quot;http://placehold.it/200x200&quot; alt=&quot;placeholder&quot; title=&quot;Small example image&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;tables&quot;&gt;Tables&lt;/h3&gt;
+
+&lt;p&gt;Aenean lacinia bibendum nulla sed consectetur. Lorem ipsum dolor sit amet, consectetur adipiscing elit.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Name&lt;/th&gt;
+      &lt;th&gt;Upvotes&lt;/th&gt;
+      &lt;th&gt;Downvotes&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tfoot&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Totals&lt;/td&gt;
+      &lt;td&gt;21&lt;/td&gt;
+      &lt;td&gt;23&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tfoot&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Alice&lt;/td&gt;
+      &lt;td&gt;10&lt;/td&gt;
+      &lt;td&gt;11&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Bob&lt;/td&gt;
+      &lt;td&gt;4&lt;/td&gt;
+      &lt;td&gt;3&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Charlie&lt;/td&gt;
+      &lt;td&gt;7&lt;/td&gt;
+      &lt;td&gt;9&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Nullam id dolor id nibh ultricies vehicula ut id elit. Sed posuere consectetur est at lobortis. Nullam quis risus eget urna mollis ornare vel eu leo.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;Want to see something else added? &lt;a href=&quot;https://github.com/poole/poole/issues/new&quot;&gt;Open an issue.&lt;/a&gt;&lt;/p&gt;
+
+&lt;div class=&quot;footnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:fn-sample_footnote&quot;&gt;
+      &lt;p&gt;Handy! Now click the return link to go back. &lt;a href=&quot;#fnref:fn-sample_footnote&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;</content><author><name>Runjia Li</name></author><summary type="html">Welcome! This is an example blog post that shows several types of HTML content supported in this theme, compliments of Poole. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Sed posuere consectetur est at lobortis. Cras mattis consectetur purus sit amet fermentum. Curabitur blandit tempus porttitor. Nullam quis risus eget urna mollis ornare vel eu leo. Nullam id dolor id nibh ultricies vehicula ut id elit. Etiam porta sem malesuada magna mollis euismod. Cras mattis consectetur purus sit amet fermentum. Aenean lacinia bibendum nulla sed consectetur. Inline HTML elements HTML defines a long list of available inline tags, a complete list of which can be found on the Mozilla Developer Network. To bold text, use &amp;lt;strong&amp;gt;. To italicize text, use &amp;lt;em&amp;gt;. Abbreviations, like HTML should use &amp;lt;abbr&amp;gt;, with an optional title attribute for the full phrase. Citations, like — Mark otto, should use &amp;lt;cite&amp;gt;. Deleted text should use &amp;lt;del&amp;gt; and inserted text should use &amp;lt;ins&amp;gt;. Superscript text uses &amp;lt;sup&amp;gt; and subscript text uses &amp;lt;sub&amp;gt;. Most of these elements are styled by browsers with few modifications on our part. Footnotes Footnotes are supported as part of the Markdown syntax. Here’s one in action. Clicking this number1 will lead you to a footnote. The syntax looks like: Clicking this number[^fn-sample_footnote] Each footnote needs the ^fn- prefix and a unique ID to be referenced for the footnoted content. The syntax for that list looks something like this: [^fn-sample_footnote]: Handy! Now click the return link to go back. You can place the footnoted content wherever you like. Markdown parsers should properly place it at the bottom of the post. Heading Vivamus sagittis lacus vel augue rutrum faucibus dolor auctor. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Code Inline code is available with the &amp;lt;code&amp;gt; element. Snippets of multiple lines of code are supported through Pygments. Longer lines will automatically scroll horizontally when needed. // Example can be run directly in your JavaScript console // Create a function that takes two arguments and returns the sum of those arguments var adder = new Function(&quot;a&quot;, &quot;b&quot;, &quot;return a + b&quot;); // Call the function adder(2, 6); // &amp;gt; 8 You may also optionally show code snippets with line numbers. Add linenos to the Pygments tags. 1 2 3 4 5 6 7 8 // Example can be run directly in your JavaScript console // Create a function that takes two arguments and returns the sum of those arguments var adder = new Function(&quot;a&quot;, &quot;b&quot;, &quot;return a + b&quot;); // Call the function adder(2, 6); // &amp;gt; 8 Aenean lacinia bibendum nulla sed consectetur. Etiam porta sem malesuada magna mollis euismod. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa. Lists Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean lacinia bibendum nulla sed consectetur. Etiam porta sem malesuada magna mollis euismod. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec id elit non mi porta gravida at eget metus. Nulla vitae elit libero, a pharetra augue. Donec ullamcorper nulla non metus auctor fringilla. Nulla vitae elit libero, a pharetra augue. Vestibulum id ligula porta felis euismod semper. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Maecenas sed diam eget risus varius blandit sit amet non magna. Cras mattis consectetur purus sit amet fermentum. Sed posuere consectetur est at lobortis. HyperText Markup Language (HTML) The language used to describe and define the content of a Web page Cascading Style Sheets (CSS) Used to describe the appearance of Web content JavaScript (JS) The programming language used to build advanced Web sites and applications Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Nullam quis risus eget urna mollis ornare vel eu leo. Images Quisque consequat sapien eget quam rhoncus, sit amet laoreet diam tempus. Aliquam aliquam metus erat, a pulvinar turpis suscipit at. Tables Aenean lacinia bibendum nulla sed consectetur. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Name Upvotes Downvotes Totals 21 23 Alice 10 11 Bob 4 3 Charlie 7 9 Nullam id dolor id nibh ultricies vehicula ut id elit. Sed posuere consectetur est at lobortis. Nullam quis risus eget urna mollis ornare vel eu leo. Want to see something else added? Open an issue. Handy! Now click the return link to go back. &amp;#8617;</summary></entry></feed>

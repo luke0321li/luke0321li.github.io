@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    
+      A very quick note on the confusion matrix &middot; Runjia Luke Li
+    
+  </title>
+
+  <link rel="stylesheet" href="/styles.css">
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <link href='https://fonts.googleapis.com/css?family=PT+Serif:400,700,400italic' rel='stylesheet' type='text/css'>
+</head>
+
+
+  <body>
+
+    <div class="container content"> 
+      
+<header class="site-header fixed-banner">
+    <h3 class="site-title">
+      <a href="/" title="Home">Runjia Luke Li</a>
+      <small></small>
+    </h3>
+</header>
+
+
+
+      <main>
+        <article class="post">
+  <h1 class="post-title">A very quick note on the confusion matrix</h1>  
+  <p><img src="https://chloenelkin.files.wordpress.com/2012/12/cat-7-mondrian-composition-c-no-iii-with-red-yellow-and-blue-1935_stretchcmyk-no-6-in-photo-sheet1.jpg" alt="placeholder" />
+<em>Composition C by Piet Mondiran.</em></p>
+
+<h2 id="motivation">Motivation</h2>
+<p>The confusion matrix plays a huge role in evaluating performance of a statistical model (or a diagnostic device). Below is a self-explanatory example of a binary confusion matrix.</p>
+
+<p><img src="https://rasbt.github.io/mlxtend/user_guide/evaluate/confusion_matrix_files/confusion_matrix_1.png" alt="placeholder" /></p>
+
+<p>For example, assume someone developed a device that detects ADHD. He then conducted some clinical tests to justify the validity of the device. It is given that, of all the 1000 test subjects, 200 actually has ADHD and the rest are control. The device, oblivious of the actual distribution, identified 180 ADHD-positive individuals. Among these 180 subjects, 170 are “real” ADHD patients and the rest are controls misclassified by the device. In this case, we have 170 true positives (TPs), 180 - 170 = 10 false positives (FPs), 800 - 10 = 790 true negatives (TNs), and 200 - 170 = 30 false negatives (FNs).</p>
+
+<h2 id="metrics">Metrics</h2>
+<p>Natually, one would want as many TP and TN as possible relative to FP and FN. Therefore, scientists developed many derived values from the confusion matrix. Some of them are used interchangeably and are indeed the same thing. Some of them are used ambiguously but are in fact not the same. Here is a list of all the metrics derived from the confusion matrix and their usage:</p>
+
+<ul>
+  <li>
+    <p><strong>Precision</strong> (with no alternative names so far) is <script type="math/tex">\frac{TP}{TP + FP}</script> in other words how many samples identified as positive by the model/device are actually positive. It is a measure of how well the model avoids classifying negative samples as positive.</p>
+  </li>
+  <li>
+    <p><strong>Recall</strong>, also called <strong>Sensitivity</strong> or <strong>True Positive Rate</strong>, is <script type="math/tex">\frac{TP}{TP + FN}</script>. Since the sum of TP and FN is the total number of positive samples, recall measures how well the model “picks out” the positive samples, i.e. what proportion of all the positive samples are correctly identified.</p>
+  </li>
+  <li>
+    <p><strong>Specificity</strong>, also called <strong>True Negative Rate</strong>, is <script type="math/tex">\frac{TN}{TN + FP}</script>. It is like recall but for negative samples. The sum of TN and FP is the total number of negative samples. Therefore, specificity measures what proportion of all the negative samples are correctly identified.</p>
+  </li>
+</ul>
+
+<p>People usually say “precision &amp; recall” or “sensitivity &amp; specificity” as if they are intrinsically paired. Indeed, precision and recall are both used to compute another metric called F1-score. Higher F1-score indicates better accuracy because it is the harmonic mean of precision (<script type="math/tex">P</script>) and recall (<script type="math/tex">R</script>):</p>
+
+<script type="math/tex; mode=display">F_{1} = 2\frac{PR}{P + R}</script>
+
+<p>On the other hand, sensitivity (<script type="math/tex">TPR</script>) and 1 - specificity (<script type="math/tex">1 - TNR = FPR</script>, false positive rate) are the y- and x-axis for the ROC (receiver operating characteristic) curve respectively. There will probably be another article discussing the ROC in detail coming soon.</p>
+
+<h2 id="final-notes">Final notes</h2>
+<p>A multitide of statistical metrics have been invented to address the vagueness of the term “model accuracy”. Also, having high score for one metric does not necessarily imply the same for another. A model may have great sensitivity but poor precision because it simply identifies all samples as positive.</p>
+
+  <time datetime="2018-02-23T00:00:00-08:00" class="post-date">Posted on 23 Feb 2018.</time>
+
+  <div class="share-posts">
+
+    Share with your friends:
+
+    <a href="https://twitter.com/intent/tweet?text=A very quick note on the confusion matrix&url=http://localhost:4000/Confusion&via=&related=" rel="nofollow" target="_blank" title="Share on Twitter">Twitter</a>
+
+     <a href="https://facebook.com/sharer.php?u=http://localhost:4000/Confusion" rel="nofollow" target="_blank" title="Share on Facebook">Facebook</a>
+
+</div>
+
+</article>
+
+
+      </main>
+    
+      
+<footer class="site-footer fade-in" id="footer">
+  <div class="read-next"> Read Next: 
+    
+    <a class="prev-post" href="/Sampling">Random sampling from a large reservoir</a>
+    
+  </div>
+    
+  <a href="/" class="back-home">Back Home</a></p> 
+
+  <div class="copyright"> 
+    <small> &copy; <time datetime="2018-11-01T11:40:18-07:00">2018</time> Runjia Li</small>
+  </div>
+
+</footer>
+
+
+    </div>
+
+    <form id="subscription-form" class="subscription-form" method="POST">
+  <h2> Subscribe  </h2>
+  <p> Sign up to receive weekly updates. </p>
+  <a class="close-form" id="close-form">x</a>
+    
+    <input type="text" name="name" id="your-name" minlength="3" 
+    placeholder="Name" required> 
+
+    <input type="email" name="subscriber" id="email" 
+    placeholder="Email" required>
+
+    <!-- return to site after submission --> 
+     <input type="hidden" name="_next" value="/Confusion" />
+
+    <textarea name="YES!" value="Note to self: Add to list" style="display:none"></textarea>
+
+     <input class="send-button" type="submit" value="Sign Up"> 
+    </form>
+</form>
+
+<!-- wrap email attribute in JS for extra security -->
+<script>
+    var contactform =  document.getElementById('subscription-form');
+    contactform.setAttribute('action', '//formspree.io/' + 'luke0321lrj@gmail.com');
+</script>
+
+
+    <script src="/js/jquery.min.js"></script>
+<script src="/js/site-form-triggers.js"></script>
+<script type="text/javascript" async
+      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML">
+  </script>
+
+
+
+<script src="/js/post-scroll-triggers.js"></script>
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+ })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ ga('create', 'UA-53335201-2', 'auto');
+ ga('send', 'pageview');
+</script>
+
+
+
+  </body>
+
+</html>

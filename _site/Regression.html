@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    
+      Questions regarding Lasso and Ridge Regression &middot; Runjia Luke Li
+    
+  </title>
+
+  <link rel="stylesheet" href="/styles.css">
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <link href='https://fonts.googleapis.com/css?family=PT+Serif:400,700,400italic' rel='stylesheet' type='text/css'>
+</head>
+
+
+  <body>
+
+    <div class="container content"> 
+      
+<header class="site-header fixed-banner">
+    <h3 class="site-title">
+      <a href="/" title="Home">Runjia Luke Li</a>
+      <small></small>
+    </h3>
+</header>
+
+
+
+      <main>
+        <article class="post">
+  <h1 class="post-title">Questions regarding Lasso and Ridge Regression</h1>  
+  <p><img src="https://www.taftmuseum.org/wp-content/uploads/1976-41-Johnson_Cowboy-with-Lasso-on-Horse-957x1200.jpg" alt="placeholder" />
+<em>Cowboy with his lasso and presumably on a ridge, by Frank Tenney Johnson</em></p>
+
+<p>This article addresses some frequently asked questions about the two regularized forms of linear regression, namely Lasso and ridge regresion.</p>
+
+<h2 id="how-are-they-different-from-regular-linear-regression">How are they different from regular linear regression?</h2>
+<p>Lasso and ridge regression impose <script type="math/tex">L^{1}</script> and <script type="math/tex">L^{2}</script> penalties on the weight, as a form of regularization.</p>
+
+<p>Linear regression has the form <script type="math/tex">\hat{y} = \boldsymbol{w}^{T}\boldsymbol{x}</script> where <script type="math/tex">\hat{y}, \boldsymbol{w}, \boldsymbol{x}</script> are the predicted label, weight vector and the feature vector respectively (assume the feature vector has a dummy entry of 1 to account for the bias term). The root mean square cost function is <script type="math/tex">J(\boldsymbol{w}) = \frac{1}{n}\sum_{i = 1}^{n}(y_{i} - \boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2}</script>.</p>
+
+<p>Now, for Lasso,</p>
+
+<script type="math/tex; mode=display">J(\boldsymbol{w}) = \frac{1}{n}\sum_{i = 1}^{n}(y_{i} - \boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2} + \lambda\|\boldsymbol{w}\|_{1}</script>
+
+<p>(note: <script type="math/tex">\|\boldsymbol{v}\|_{p} = (\sum_{i = 1}^{m}\lvert v_{i}\rvert^{p})^{1/p}</script> is the <script type="math/tex">L^{p}</script> norm of vector <script type="math/tex">\boldsymbol{v} \in \mathbb{R}^{m}</script>); <br /></p>
+
+<p>For ridge regression,</p>
+
+<script type="math/tex; mode=display">J(\boldsymbol{w}) = \frac{1}{n}\sum_{i = 1}^{n}(y_{i} - \boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2} + \lambda\|\boldsymbol{w}\|_{2}^{2}</script>
+
+<p>It can be seen that for both Lasso and ridge regression, the cost function increases with the norm (can be thought of as a measurement of “size”) of the weight vector. With larger weights, the weight vector will have greater norm, resulting in higher cost. A positive hyperparameter, <script type="math/tex">\lambda</script>, controlls the extent to which the norm affects the cost (its actual mechanism of action will be described later).</p>
+
+<h2 id="are-the-cost-functions-still-convex">Are the cost functions still convex?</h2>
+
+<p>Yes. The original cost function is convex, the <script type="math/tex">L^{p}</script> norm is always convex, and the sum of convex functions is still convex.</p>
+
+<h2 id="what-is-the-gradient-of-lassos-cost-function">What is the gradient of Lasso’s cost function?</h2>
+
+<p><script type="math/tex">\lvert x \rvert</script> is non-differentiable. However, there exist some generalized gradient descent algorithms for non-differentiable functions.</p>
+
+<h2 id="what-are-the-closed-form-solutions-for-lasso-and-ridge-regression">What are the closed-form solutions for Lasso and ridge regression?</h2>
+
+<p>Since Lasso has a non-differentiable gradient, it does not have a closed-form solution. On the other hand, ridge regression does. Let <script type="math/tex">\boldsymbol{y}</script> be the vector of labels where each element corresponds to the label of a single sample; let <script type="math/tex">\mathbf{X}</script>  be the matrix such that each row corresponds to a single sample’s feature vector. Assume both <script type="math/tex">\boldsymbol{y}</script> and <script type="math/tex">\boldsymbol{w}</script> are column vectors, then rewrite the cost function:</p>
+
+<script type="math/tex; mode=display">J(\boldsymbol{w}) = (\boldsymbol{y} - \mathbf{X}\boldsymbol{w})^{T}(\boldsymbol{y} - \mathbf{X}\boldsymbol{w}) + \lambda\boldsymbol{w}^{T}\boldsymbol{w}</script>
+
+<p>As mentioned this function is convex, so a global minimum is guaranteed to be found by setting its derivative to zero.</p>
+
+<script type="math/tex; mode=display">\frac{\partial J(\boldsymbol{w})}{\partial \boldsymbol{w}} = -2(\boldsymbol{y} - \mathbf{X}\boldsymbol{w})^{T}\mathbf{X} + 2\lambda\boldsymbol{w}^{T} = 0</script>
+
+<p>Take the transpose of both sides:</p>
+
+<script type="math/tex; mode=display">\mathbf{X}^{T}(\boldsymbol{y} - \mathbf{X}\boldsymbol{w}) - \lambda\boldsymbol{w} = 0</script>
+
+<script type="math/tex; mode=display">\mathbf{X}^{T}\boldsymbol{y} - (\mathbf{X}^{T}\mathbf{X} + \lambda\mathbf{I})\boldsymbol{w} = 0</script>
+
+<p>Which gives the closed form solution:</p>
+
+<script type="math/tex; mode=display">\boldsymbol{w} = (\mathbf{X}^{T}\mathbf{X} + \lambda\mathbf{I})^{-1}\mathbf{X}^{T}\boldsymbol{y}</script>
+
+<h2 id="how-does-lasso-select-features">How does Lasso “select features”?</h2>
+
+<p>When being asked this question many people pull up this picture:
+<img src="https://www.mlalgorithms.org/static/figure.l1_l2_regression.1-0af871ca059475802831110c99694ba6-16418.png" alt="placeholder" />
+<em>A graph seen by many but understood by few</em></p>
+
+<p>Here is a thorough explanation of the picture. Lasso attempts to solve the following convex optimization problem:</p>
+
+<script type="math/tex; mode=display">\min_{\boldsymbol{w}}\frac{1}{n}\sum_{i = 1}^{n}(y_{i} - \boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2} + \lambda\|\boldsymbol{w}\|_{1}</script>
+
+<p>In fact, the above is the Lagrangian of the following constrained problem:</p>
+
+<script type="math/tex; mode=display">\min_{\boldsymbol{w}}\frac{1}{n}\sum_{i = 1}^{n}(y_{i} - \boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2}</script>
+
+<script type="math/tex; mode=display">s.t. \|\boldsymbol{w}\|_{1} \leq t</script>
+
+<p>where <script type="math/tex">t</script> is some constant.</p>
+
+<p>This picture describes the simple case where <script type="math/tex">\boldsymbol{w}</script> only has 2 dimensions. The cocentric ellipses are the contour lines of <script type="math/tex">\frac{1}{n}\sum_{i = 1}^{n}(y_{i} - \boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2}</script>, with its global minimum at the red dot (outer contours represent larger function values). The purple diamond represents the bounded region where <script type="math/tex">\|\boldsymbol{w}\|_{1} \leq t</script>.</p>
+
+<p>Now, solving this constrained optimization problem requires finding a point within the diamond such that it lies on a contour line with a small function value as possible. It is very likely that this point occurs at a vertex of the diamond, in which case one entry of the weight vector must be zero. 
+As a result, one of the features will have a zero coefficient (since linear regression takes the dot product between the weight and feature vectors) and has no impact on <script type="math/tex">y</script>.</p>
+
+<p>Still, Lasso does not always yield zero entries for the weight vector - but it happens often. According to <em>Elements of Statistical Learning</em>, with high dimensional data there are many more opportunities for the estimated weights to be zero because the purple diamond will become a rhomboid with a lot of vertices.</p>
+
+<h2 id="what-are-the-probabilistic-interpretations-of-lasso-and-ridge-regression">What are the probabilistic interpretations of Lasso and ridge regression?</h2>
+
+<p><strong>Basically, Lasso and ridge regression impose different constraints on the probability distribution of the weight</strong>. Recall that linear regression attempts to model a relationship of the form</p>
+
+<script type="math/tex; mode=display">y = \boldsymbol{w}^{T}\boldsymbol{x} + \epsilon</script>
+
+<p>where <script type="math/tex">\epsilon = y - \boldsymbol{w}^{T}\boldsymbol{x} = y - \hat{y} \sim N(0, \sigma^{2})</script> is a random noise variable that represents the model’s perturbations from reality. Given some training data <script type="math/tex">(\boldsymbol{x}_{1}, y_{1}),... (\boldsymbol{x}_{n}, y_{n})</script>, one may fit a model by finding a maximum-likelihood estimation of its parameter <script type="math/tex">\boldsymbol{w}</script>. The likelihood is the probability of observing the training labels <script type="math/tex">\boldsymbol{y}</script>, given the
+training samples <script type="math/tex">\mathbf{X}</script> and the parameter <script type="math/tex">\boldsymbol{w}</script>:</p>
+
+<script type="math/tex; mode=display">L(\boldsymbol{w}) = P(\boldsymbol{y}\vert\mathbf{X}; \boldsymbol{w}) = \prod_{i = 1}^{n}P(y_{i} \vert \boldsymbol{x}_{i}; \boldsymbol{w})</script>
+
+<p>Since <script type="math/tex">\epsilon \sim N(0, \sigma^{2})</script>, <script type="math/tex">y\vert\boldsymbol{x}_{i} \sim N(\boldsymbol{w}^{T}\boldsymbol{x}_{i}, \sigma^{2})</script>. Therefore the above equation becomes:</p>
+
+<script type="math/tex; mode=display">L(\boldsymbol{w}) = \prod_{i = 1}^{n}\frac{1}{\sqrt{2\pi\sigma^{2}}}e^{-\frac{(y_{i} - \boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2}}{2\sigma^{2}}}</script>
+
+<p>Taking its logarithm gives the log-likelihood form:</p>
+
+<script type="math/tex; mode=display">l(\boldsymbol{w}) = \sum_{i = 1}^{n}\log(\frac{1}{\sqrt{2\pi\sigma^{2}}})-\sum_{i = 1}^{n}\frac{(y_{i} -\boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2}}{2\sigma^{2}}</script>
+
+<p>To find a best <script type="math/tex">\boldsymbol{w}</script> we attempt to maximize this log-likelihood. Notice that:</p>
+
+<script type="math/tex; mode=display">\underset{\boldsymbol{w}}{\arg\max}\;l(\boldsymbol{w}) = \underset{\boldsymbol{w}}{\arg\max}-\sum_{i = 1}^{n}(y_{i} -\boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2} = \underset{\boldsymbol{w}}{\arg\min}\;J(\boldsymbol{w})</script>
+
+<p>In other words, minimizing the cost is the same problem as maximizing the log likelihood, giving the optimization problem a graceful probabilistic interpretation.</p>
+
+<p>With Lasso, each term in the weight vector <script type="math/tex">\boldsymbol{w}</script> is forced to have a Laplacian prior distribution with mean 0 and some scale <script type="math/tex">b</script>:</p>
+
+<script type="math/tex; mode=display">w_{i} \sim Laplace(0, b)</script>
+
+<script type="math/tex; mode=display">P(\boldsymbol{w})= \prod_{i = 1}^{m}\frac{1}{2b}e^{\frac{-\vert w_{i}\vert}{b}}</script>
+
+<p>The likelihood is multiplied by the prior to obtain the maximum a posteriori (MAP) objective:</p>
+
+<script type="math/tex; mode=display">P(\boldsymbol{y}\vert\mathbf{X}; \boldsymbol{w})P(\boldsymbol{w}) = \prod_{i = 1}^{n}\frac{1}{\sqrt{2\pi\sigma^{2}}}e^{-\frac{(y_{i} - \boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2}}{2\sigma^{2}}} \prod_{i = 1}^{m}\frac{1}{2b}e^{\frac{-\vert w_{i}\vert}{b}}</script>
+
+<p>Taking the logarithm:</p>
+
+<script type="math/tex; mode=display">\sum_{i = 1}^{n}\log(\frac{1}{\sqrt{2\pi\sigma^{2}}})-\sum_{i = 1}^{n}\frac{(y_{i} -\boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2}}{2\sigma^{2}} + \sum_{i = 1}^{m}\log(\frac{1}{2b}) - \sum_{i = 1}^{m}\frac{\vert w_{i}\vert}{b}</script>
+
+<p>After taking the argmax and removing irrelevant terms:</p>
+
+<script type="math/tex; mode=display">\underset{\boldsymbol{w}}{\arg\max}\;l(\boldsymbol{w}) = \underset{\boldsymbol{w}}{\arg\min}\sum_{i = 1}^{n}\frac{(y_{i} -\boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2}}{2\sigma^{2}} + \sum_{i = 1}^{m}\frac{\vert w_{i}\vert}{b}</script>
+
+<script type="math/tex; mode=display">= \underset{\boldsymbol{w}}{\arg\min}\sum_{i = 1}^{n}(y_{i} -\boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2} + \frac{2\sigma^{2}}{b}\|\boldsymbol{w}\|_{1}</script>
+
+<p>Now this clearly resembles the Lasso cost function described previously, except that in the latter, the term <script type="math/tex">2\sigma^{2}/b</script> is represented by a single parameter <script type="math/tex">\lambda</script>. Since <script type="math/tex">\sigma</script> is fixed for a given training set, <script type="math/tex">\lambda</script> is actually inversely proportional to the scale parameter <script type="math/tex">b</script> of the distribution of weights.</p>
+
+<p>With ridge regression, <script type="math/tex">\boldsymbol{w}</script> has a prior in the form of a multivariate normal distribution:</p>
+
+<script type="math/tex; mode=display">\boldsymbol{w} \sim N(0, a^{2}\mathbf{I})</script>
+
+<p>In other words:</p>
+
+<script type="math/tex; mode=display">w_{i} \sim N(0, a^{2})</script>
+
+<script type="math/tex; mode=display">P(\boldsymbol{w}) = \prod_{i = 1}^{m}\frac{1}{\sqrt{2\pi a^{2}}}e^{-\frac{w_{i}^{2}}{2a^{2}}}</script>
+
+<p>where <script type="math/tex">a</script> is some constant. In a similar fashion as above, minimizing the cost function of ridge regression can be shown as equivalent to maximizing <script type="math/tex">P(\boldsymbol{y}\vert\mathbf{X}; \boldsymbol{w})P(\boldsymbol{w})</script>.</p>
+
+<h2 id="what-is-a-compromise-between-lasso-and-ridge-regression">What is a compromise between Lasso and ridge regression?</h2>
+<p>The elasic net regression takes the linear combination of <script type="math/tex">L^{1}</script> and <script type="math/tex">L^{2}</script> penalties as the regularization term:</p>
+
+<script type="math/tex; mode=display">J(\boldsymbol{w}) = \frac{1}{n}\sum_{i = 1}^{n}(y_{i} - \boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2} + \lambda_{1}\|\boldsymbol{w}\|_{1} + \lambda_{2}\|\boldsymbol{w}\|_{2}</script>
+
+
+  <time datetime="2018-05-25T00:00:00-07:00" class="post-date">Posted on 25 May 2018.</time>
+
+  <div class="share-posts">
+
+    Share with your friends:
+
+    <a href="https://twitter.com/intent/tweet?text=Questions regarding Lasso and Ridge Regression&url=http://localhost:4000/Regression&via=&related=" rel="nofollow" target="_blank" title="Share on Twitter">Twitter</a>
+
+     <a href="https://facebook.com/sharer.php?u=http://localhost:4000/Regression" rel="nofollow" target="_blank" title="Share on Facebook">Facebook</a>
+
+</div>
+
+</article>
+
+
+      </main>
+    
+      
+<footer class="site-footer fade-in" id="footer">
+  <div class="read-next"> Read Next: 
+    
+    <a class="prev-post" href="/Confusion">A very quick note on the confusion matrix</a>
+    
+  </div>
+    
+  <a href="/" class="back-home">Back Home</a></p> 
+
+  <div class="copyright"> 
+    <small> &copy; <time datetime="2018-11-01T11:40:18-07:00">2018</time> Runjia Li</small>
+  </div>
+
+</footer>
+
+
+    </div>
+
+    <form id="subscription-form" class="subscription-form" method="POST">
+  <h2> Subscribe  </h2>
+  <p> Sign up to receive weekly updates. </p>
+  <a class="close-form" id="close-form">x</a>
+    
+    <input type="text" name="name" id="your-name" minlength="3" 
+    placeholder="Name" required> 
+
+    <input type="email" name="subscriber" id="email" 
+    placeholder="Email" required>
+
+    <!-- return to site after submission --> 
+     <input type="hidden" name="_next" value="/Regression" />
+
+    <textarea name="YES!" value="Note to self: Add to list" style="display:none"></textarea>
+
+     <input class="send-button" type="submit" value="Sign Up"> 
+    </form>
+</form>
+
+<!-- wrap email attribute in JS for extra security -->
+<script>
+    var contactform =  document.getElementById('subscription-form');
+    contactform.setAttribute('action', '//formspree.io/' + 'luke0321lrj@gmail.com');
+</script>
+
+
+    <script src="/js/jquery.min.js"></script>
+<script src="/js/site-form-triggers.js"></script>
+<script type="text/javascript" async
+      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML">
+  </script>
+
+
+
+<script src="/js/post-scroll-triggers.js"></script>
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+ })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ ga('create', 'UA-53335201-2', 'auto');
+ ga('send', 'pageview');
+</script>
+
+
+
+  </body>
+
+</html>

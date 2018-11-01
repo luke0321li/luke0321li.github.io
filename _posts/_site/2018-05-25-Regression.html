@@ -1,0 +1,81 @@
+<p><img src="https://www.taftmuseum.org/wp-content/uploads/1976-41-Johnson_Cowboy-with-Lasso-on-Horse-957x1200.jpg" alt="placeholder" />
+<em>Cowboy with his lasso and presumably on a ridge, by Frank Tenney Johnson</em></p>
+
+<p>This article addresses some frequently asked questions about the two regularized forms of linear regression, namely Lasso and ridge regresion.</p>
+
+<h2 id="how-are-they-different-from-regular-linear-regression">How are they different from regular linear regression?</h2>
+<p>Lasso and ridge regression impose <script type="math/tex">L^{1}</script> and <script type="math/tex">L^{2}</script> penalties on the weight, as a form of regularization.</p>
+
+<p>Linear regression has the form <script type="math/tex">y = \boldsymbol{w}^{T}\boldsymbol{x}</script> where <script type="math/tex">y, \boldsymbol{w}, \boldsymbol{x}</script> are the label, weight vector and the feature vector respectively (assume the feature vector has a dummy entry of 1 to account for the bias term). The root mean square cost function is <script type="math/tex">J(\boldsymbol{w}) = \frac{1}{N}\sum_{i = 1}^{N}(y_{i} - \boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2}</script>.</p>
+
+<p>Now, for Lasso,</p>
+
+<script type="math/tex; mode=display">J(\boldsymbol{w}) = \frac{1}{N}\sum_{i = 1}^{N}(y_{i} - \boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2} + \lambda\|\boldsymbol{w}\|_{1}</script>
+
+<p>(note: <script type="math/tex">\|\boldsymbol{v}\|_{p} = (\sum_{i = 1}^{M}\lvert v_{i}\rvert^{p})^{1/p}</script> is the <script type="math/tex">L^{p}</script> norm of vector <script type="math/tex">\boldsymbol{v} \in \mathbb{R}^{M}</script>); <br /></p>
+
+<p>For ridge regression,</p>
+
+<script type="math/tex; mode=display">J(\boldsymbol{w}) = \frac{1}{N}\sum_{i = 1}^{N}(y_{i} - \boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2} + \lambda\|\boldsymbol{w}\|_{2}^{2}</script>
+
+<p>It can be seen that for both Lasso and ridge regression, the cost function increases with the norm (can be thought of as a measurement of “size”) of the weight vector. With larger weights, the weight vector will have greater norm, resulting in higher cost. The extent to which the norm affects the cost is controlled by a positive hyperparameter, <script type="math/tex">\lambda</script>.</p>
+
+<h2 id="are-the-cost-functions-still-convex">Are the cost functions still convex?</h2>
+
+<p>Yes. The original cost function is convex, the <script type="math/tex">L^{p}</script> norm is always convex, and the sum of convex functions is still convex.</p>
+
+<h2 id="what-is-the-gradient-of-lassos-cost-function">What is the gradient of Lasso’s cost function?</h2>
+
+<p><script type="math/tex">\lvert x \rvert</script> is non-differentiable. However, there exist some generalized gradient descent algorithms for non-differentiable functions. The task of exploring them is left as an exercise to the reader.</p>
+
+<h2 id="what-are-the-closed-form-solutions-for-lasso-and-ridge-regression">What are the closed-form solutions for Lasso and ridge regression?</h2>
+
+<p>Since Lasso has a non-differentiable gradient, it does not have a closed-form solution. On the other hand, ridge regression does. Let <script type="math/tex">\boldsymbol{y}</script> be the vector of labels where each element corresponds to the label of a single sample; let <script type="math/tex">\mathbf{X}</script>  be the matrix such that each row corresponds to a single sample’s feature vector. Assume both <script type="math/tex">\boldsymbol{y}</script> and <script type="math/tex">\boldsymbol{w}</script> are column vectors, then rewrite the cost function:</p>
+
+<script type="math/tex; mode=display">J(\boldsymbol{w}) = (\boldsymbol{y} - \mathbf{X}\boldsymbol{w})^{T}(\boldsymbol{y} - \mathbf{X}\boldsymbol{w}) + \lambda\boldsymbol{w}^{T}\boldsymbol{w}</script>
+
+<p>As mentioned this function is convex, so a global minimum is guaranteed to be found by setting its derivative to zero.</p>
+
+<script type="math/tex; mode=display">\frac{\partial J(\boldsymbol{w})}{\partial \boldsymbol{w}} = -2(\boldsymbol{y} - \mathbf{X}\boldsymbol{w})^{T}\mathbf{X} + 2\lambda\boldsymbol{w}^{T} = 0</script>
+
+<p>Take the transpose of both sides:</p>
+
+<script type="math/tex; mode=display">\mathbf{X}^{T}(\boldsymbol{y} - \mathbf{X}\boldsymbol{w}) - \lambda\boldsymbol{w} = 0</script>
+
+<script type="math/tex; mode=display">\mathbf{X}^{T}\boldsymbol{y} - (\mathbf{X}^{T}\mathbf{X} + \lambda\mathbf{I})\boldsymbol{w} = 0</script>
+
+<p>Which gives the closed form solution</p>
+
+<script type="math/tex; mode=display">\boldsymbol{w} = (\mathbf{X}^{T}\mathbf{X} + \lambda\mathbf{I})^{-1}\mathbf{X}^{T}\boldsymbol{y}</script>
+
+<h2 id="how-does-lasso-select-features">How does Lasso “select features”?</h2>
+
+<p>When being asked this question many people pull up this picture:
+<img src="https://www.mlalgorithms.org/static/figure.l1_l2_regression.1-0af871ca059475802831110c99694ba6-16418.png" alt="placeholder" />
+<em>A graph seen by many but understood by few</em></p>
+
+<p>Here is a thorough explanation of the picture. Lasso attempts to solve the following convex optimization problem:</p>
+
+<script type="math/tex; mode=display">\min_{\boldsymbol{w}}\frac{1}{N}\sum_{i = 1}^{N}(y_{i} - \boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2} + \lambda\|\boldsymbol{w}\|_{1}</script>
+
+<p>In fact, the above is the Lagrangian of the following constrained problem:</p>
+
+<script type="math/tex; mode=display">\min_{\boldsymbol{w}}\frac{1}{N}\sum_{i = 1}^{N}(y_{i} - \boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2}</script>
+
+<script type="math/tex; mode=display">s.t. \|\boldsymbol{w}\|_{1} \leq t</script>
+
+<p>where <script type="math/tex">t</script> is some constant.</p>
+
+<p>This picture describes the simple case where <script type="math/tex">\boldsymbol{w}</script> only has 2 dimensions. The cocentric ellipses are the contour lines of <script type="math/tex">\frac{1}{N}\sum_{i = 1}^{N}(y_{i} - \boldsymbol{w}^{T}\boldsymbol{x}_{i})^{2}</script>, with its global minimum at the red dot (outer contours represent larger function values). The purple diamond represents the bounded region where <script type="math/tex">\|\boldsymbol{w}\|_{1} \leq t</script>.</p>
+
+<p>Now, solving this constrained optimization problem requires finding a point within the diamond such that it lies on a contour line with a small function value as possible. It is very likely that this point occurs at a vertex of the diamond, in which case one entry of the weight vector must be zero. 
+As a result, one of the features will have a zero coefficient (since linear regression takes the dot product between the weight and feature vectors) and has no impact on <script type="math/tex">y</script>.</p>
+
+<p>Still, Lasso does not always yield zero entries for the weight vector - but it happens often. According to <em>Elements of Statistical Learning</em>, with high dimensional data there are many more opportunities for the estimated weights to be zero because the purple diamond will become a rhomboid with a lot of vertices.</p>
+
+<h2 id="what-are-the-probabilistic-interpretations-of-lasso-and-ridge-regression">What are the probabilistic interpretations of Lasso and ridge regression?</h2>
+
+<h2 id="why-do-we-say-regularization-reduces-overfitting">Why do we say “regularization reduces overfitting”?</h2>
+
+<h2 id="what-is-a-compromise-between-lasso-and-ridge-regression">What is a compromise between Lasso and ridge regression?</h2>
+
