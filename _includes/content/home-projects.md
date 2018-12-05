@@ -1,6 +1,10 @@
 
 # Here's what I've been working on
 
+* ### [Ernstlab projects](https://github.com/ernstlab)
+    * As an undergraduate researcher in the lab, I try to apply machine learning to understand genomics
+
+
 * ### [NN_collection - Neural networks](https://github.com/luke0321li/NN_collection)
     * Some Tensorflow implementations of neural network architectures
 
